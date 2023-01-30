@@ -9,4 +9,4 @@
 - express-fileupload
 - jimp
 - uuid 
- 
+- express-validator

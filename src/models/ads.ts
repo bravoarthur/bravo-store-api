@@ -1,4 +1,4 @@
-import { Schema, model, connection } from "mongoose";
+import { Schema, model, Model, connection } from "mongoose";
 
 export type AdsType = {
     
@@ -39,6 +39,6 @@ const modelName: string = 'Ads'
 console.log(connection.models[modelName])
 
 
-export default (connection && connection.models[modelName]) ? connection.models[modelName] : model<AdsType>(modelName, schema)
+export default (connection && connection.models[modelName]) ? connection.models[modelName] as Model<AdsType> : model<AdsType>(modelName, schema)
 
 

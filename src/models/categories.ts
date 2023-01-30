@@ -1,4 +1,4 @@
-import { Schema, model, connection } from "mongoose";
+import { Schema, model, Model, connection } from "mongoose";
 
 export type CategoryType = {
     
@@ -19,5 +19,5 @@ const modelName: string = 'Category'
 console.log(connection.models[modelName])
 
 
-export default (connection && connection.models[modelName]) ? connection.models[modelName] : model<CategoryType>(modelName, schema)
+export default (connection && connection.models[modelName]) ? connection.models[modelName] as Model<CategoryType> : model<CategoryType>(modelName, schema)
 

@@ -1,4 +1,4 @@
-import { Schema, model, connection } from "mongoose";
+import { Schema, model, Model, connection } from "mongoose";
 
 export type UserType = {
     
@@ -26,7 +26,7 @@ const modelName: string = 'User'
 console.log(connection.models[modelName])
 
 
-export default (connection && connection.models[modelName]) ? connection.models[modelName] : model<UserType>(modelName, schema)
+export default (connection && connection.models[modelName]) ? connection.models[modelName] as Model<UserType> : model<UserType>(modelName, schema)
 
 
 /*
