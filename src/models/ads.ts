@@ -1,18 +1,18 @@
-import { Schema, model, Model, connection } from "mongoose";
+import { Schema, model, Model, connection, Types } from "mongoose";
 
 export type AdsType = {
     
-    idUser: string,
+    idUser: Types.ObjectId | string,
     state: string,
     category: string,
-    images: [object],
-    dateCreated: string,
+    images: [{url: string, default: boolean}],
+    dateCreated: Date,
     title: string,
     price: number,
     priceNegotiable: boolean,
     description: string,
     views: number,
-    status: string,
+    status: boolean,
 
 } 
 
@@ -29,7 +29,7 @@ const schema = new Schema<AdsType>({
     priceNegotiable: Boolean,
     description: String,
     views: Number,
-    status: String,
+    status: Boolean,
 
     
 })

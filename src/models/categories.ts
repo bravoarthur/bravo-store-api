@@ -3,8 +3,9 @@ import { Schema, model, Model, connection } from "mongoose";
 export type CategoryType = {
     
     name: string,    
-    slug: string
-
+    slug: string,
+    img?: string
+    
 } 
 
 
