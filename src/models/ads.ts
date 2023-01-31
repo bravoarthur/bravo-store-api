@@ -4,7 +4,7 @@ export type AdsType = {
     
     idUser: Types.ObjectId | string,
     state: string,
-    category: string,
+    category: Types.ObjectId | string,
     images: [{url: string, default: boolean}],
     dateCreated: Date,
     title: string,
