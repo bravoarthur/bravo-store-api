@@ -128,6 +128,35 @@ const AdsController = {
     },
 
     getList: async (req: Request, res: Response) => {
+
+        let {sort = 'asc', offset=0, limit = 8, q, cat, state} = req.query
+
+        const adsData = await Ads.find({status: true}).exec()
+
+        let ads = []
+        for (let i in adsData) {
+
+            let defaultImg = adsData[i].images.find(e=>e.default)
+            let image;
+
+            if(defaultImg) {
+                image = `${process.env.Base}/media/${defaultImg.url}`
+
+            } else {
+                image = `${process.env.Base}/media/default.jpg`
+            }
+
+            ads.push({
+                id: adsData[i]._id,
+                title: adsData[i].title,
+                price: adsData[i].price,
+                priceNegotiable: adsData[i].priceNegotiable,
+                image: image,
+
+
+            })
+        }
+        res.json({ads: ads})
     
     },
 
