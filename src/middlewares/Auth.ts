@@ -7,7 +7,7 @@ const Auth = {
 
         if(!req.query.token && !req.body.token) {
             res.status(403) // not authorized
-            res.json({notAllowed: true})
+            res.json({notAllowed: true, token: 'Invalid Token, Please login again'})
             return
         }
 
@@ -24,7 +24,7 @@ const Auth = {
         
         if(token === '') {
             res.status(403) // not authorized
-            res.json({notAllowed: true})
+            res.json({notAllowed: true, token: 'Invalid Token, Please login again'})
             return
         }
 
@@ -33,10 +33,10 @@ const Auth = {
             token: token
         })
         
-        console.log(user)
+        //console.log(user)
         if(!user) {
             res.status(403) // not authorized
-            res.json({notAllowed: true})
+            res.json({notAllowed: true, token: 'Invalid Token, Please login again'})
             return
         }
         next()

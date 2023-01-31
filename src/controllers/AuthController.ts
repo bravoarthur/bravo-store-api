@@ -11,8 +11,45 @@ const AuthController = {
 
     
     signin: async (req: Request, res: Response) => {
+
+        const errors = validationResult(req)
+        if(!errors.isEmpty()) {
+
+            res.status(400)
+            res.json({error: errors.mapped()})
+            return
+        }
+
+        const data = matchedData(req)
+
+        const user = await User.findOne({
+            email: data.email
+        })
+        ////Email check/////////////////////////////
+        if(!user) {
+            res.status(400)
+            res.json({error: {email: {msg: 'Email or password invalid'}}})
+            return
+        }
+        /////password check ///////////////////////
+        
+        const match = await bcrypt.compare(data.password, user.passwordHash)
+        if(!match) {
+            res.status(400)
+            res.json({error: {password: {msg: 'Email or password invalid'}}})
+            return
+        }
+
+        const payload = (Date.now() + Math.random()).toString()
+        const token = await bcrypt.hash(payload as string, 10)
+        user.token = token
+        await user.save()
+
+        res.status(201)
+        res.json({signup: 'ok', token: token, email: user.email})
     
     },
+
     signup: async (req: Request, res: Response) => {
 
         const errors = validationResult(req)
@@ -68,7 +105,7 @@ const AuthController = {
         })      
 
         await newUser.save()
-        res.status(200)
+        res.status(201)
         res.json({signup: 'ok', token: token})
 
     },
