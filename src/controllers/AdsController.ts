@@ -8,6 +8,7 @@ import Jimp from 'jimp'
 import {  UploadedFile } from "express-fileupload"
 import State from '../models/state'
 import { isValidObjectId } from "mongoose"
+import { unlink } from "fs/promises"
 
 
 dotenv.config()
@@ -17,6 +18,15 @@ type FilterType ={
     category?: string,
     state?: string,
     title?: {[fieldname:string]: string }
+}
+type EditAdType = {
+    title?: string, 
+    status?: boolean, 
+    price?: number, 
+    priceNegotiable?: boolean, 
+    description?: string, 
+    category?: string, 
+    images?: {url: string, default: boolean}[]
 }
 
 const addImage = async (buffer: any) => {
@@ -276,7 +286,104 @@ const AdsController = {
 
     },
     editAction: async (req: Request, res: Response) => {
-    
+
+        let {id} = req.params
+        let {title, status, price, priceNeg, desc, cat, images, token } = req.body
+
+        let updates: EditAdType = {}
+
+        if(!isValidObjectId(id)){
+            res.status(400)
+            res.json({error: {message: 'Product doesnt exist, try again'}})
+            return 
+        }
+
+        const adTobeEdited = await Ads.findById(id).exec()
+
+        if(!adTobeEdited) {
+            res.status(400)
+            res.json({error: {message: 'Product doesnt exist, try again'}})
+            return 
+        }
+
+        const user = await User.findOne({token: token}).exec()
+
+        if(user!._id.toString() !== adTobeEdited.idUser ) {
+            res.status(400)
+            res.json({error: {message: 'You cannot edit this Ad'}})
+            return 
+        }
+
+        if(title) {
+            updates.title = title
+        }
+
+        
+        if(price) {
+            price = price.replace('.', '').replace(',', '.')
+            price = parseFloat(price)
+            updates.price = price            
+        }
+        
+        if(priceNeg) {
+            priceNeg = priceNeg==='true' ? true : false
+            updates.priceNegotiable = priceNeg            
+        }
+        
+        if(status) {
+            status = status==='true' ? true : false
+            updates.status= status
+        }
+
+        if(desc) {
+            updates.description = desc            
+        }
+        
+
+        if(cat) {
+
+            const category = await Categories.findOne({slug: cat}).exec()
+
+            if(!category) {
+                res.status(400)
+                res.json({error: {message: 'Invalid Category'}})
+            return 
+            }
+
+            updates.category = category._id.toString()
+        }
+        
+        if(images) {
+            // if deleting images - the frontend should send the array without the images deleted - If the images is empty array all images will be deleted
+
+            let newImages = []
+
+            if(images.length === 0) {
+                
+                for (let i in adTobeEdited.images) {
+                                        
+                    await unlink(`./public/media/${adTobeEdited.images[i].url}`)
+                }
+
+            } else {                
+
+                for (let i in adTobeEdited.images) {
+                    
+                    if(adTobeEdited.images[i].url === images[i].url) {
+                        newImages.push(adTobeEdited.images[i])
+                    } else {
+                        await unlink(`./public/media/${adTobeEdited.images[i].url}`)
+                    }
+                }
+            }           
+            updates.images = newImages
+        }
+        
+
+        await Ads.findByIdAndUpdate(id, {$set: updates})
+
+        res.json({error: ''})
+     
     },
 
 }
