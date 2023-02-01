@@ -158,8 +158,7 @@ const AdsController = {
         let {sort = 'asc', offset=0, limit = 8, q, cat, state} = req.query
         let filters: FilterType = {status: true}
 
-        if(q) {
-            console.log('aqui testando q',q)
+        if(q) {            
             q = q as string
             filters.title = {'$regex': q, '$options': 'i'}
         }
@@ -377,6 +376,56 @@ const AdsController = {
                 }
             }           
             updates.images = newImages
+        }
+
+        if(req.files && req.files.img) {
+            
+            let imgFiles = req.files.img as UploadedFile[] 
+
+            if(imgFiles.length === undefined) {
+                let imgFile = req.files.img as UploadedFile
+                
+                if(['image/jpeg', 'image/jpg', 'image/png'].includes(imgFile.mimetype)) {
+                    if(!updates.images) {                        
+                        updates.images = adTobeEdited.images
+                    }
+                    let url = await addImage(imgFile.data)   
+                    updates.images.push({
+                        url: url,
+                        default: false
+                    })     
+                } else {
+                    res.status(400)
+                    res.json({error: {message: 'invalid image format'}})
+                    return
+                }
+
+            } else {
+                if(!updates.images) {                    
+                    updates.images = []
+                }
+
+                for(let i=0; i < imgFiles.length; i++) {
+
+                    if(['image/jpeg', 'image/jpg', 'image/png'].includes(imgFiles[i].mimetype)) {
+
+                        let url = await addImage(imgFiles[i].data)   
+                        updates.images.push({
+                            url: url,
+                            default: false
+                        })    
+                    } else {
+                        res.status(400)
+                        res.json({error: {message: 'invalid image format'}})
+                        return
+                    }
+                }                           
+            }           
+        }
+        
+        if(updates.images) {   
+            if(updates.images.length>0)         
+                updates.images[0].default= true
         }
         
 

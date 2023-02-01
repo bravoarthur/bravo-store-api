@@ -10,3 +10,6 @@
 - jimp
 - uuid 
 - express-validator
+
+- Passport
+- JWT

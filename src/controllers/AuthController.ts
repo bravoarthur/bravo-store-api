@@ -5,6 +5,7 @@ import User from "../models/user"
 import State from '../models/state'
 import mongoose from 'mongoose'
 import bcrypt from 'bcrypt'
+import generateToken from "../helpers/generateToken"
 
 
 const AuthController = {
@@ -40,12 +41,12 @@ const AuthController = {
             return
         }
 
-        const payload = (Date.now() + Math.random()).toString()
-        const token = await bcrypt.hash(payload as string, 10)
+        
+        const token = generateToken({id: user._id})        
         user.token = token
         await user.save()
 
-        res.status(201)
+        res.status(200)
         res.json({signup: 'ok', token: token, email: user.email})
     
     },
@@ -92,18 +93,21 @@ const AuthController = {
     ////add//////////////////////////////////////////////////
                 
         const passwordHash = await bcrypt.hash(data.password, 10)
-        const payload = (Date.now() + Math.random()).toString()
-        const token = await bcrypt.hash(payload as string, 10)
+        //const payload = (Date.now() + Math.random()).toString()
+        //const token = await bcrypt.hash(payload as string, 10)
+        let token = ''
         
         const newUser = new User({
             name: data.name,
             email: data.email,
             state: data.state,
             passwordHash: passwordHash,
-            token: token
-        
-        })      
+            token: token        
+        })  
 
+        token = generateToken({id: newUser._id})
+        newUser.token = token               
+        
         await newUser.save()
         res.status(201)
         res.json({signup: 'ok', token: token})
@@ -113,3 +117,4 @@ const AuthController = {
 }
 
 export default AuthController
+

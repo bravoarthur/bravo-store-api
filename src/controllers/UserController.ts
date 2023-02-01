@@ -15,6 +15,10 @@ type UpdatesType = {
     token?: string
 }
 
+interface UserWithId extends UserType {
+    _id: string
+}
+
 
 const UserController = {
 
@@ -25,11 +29,10 @@ const UserController = {
 
     },
     
-    info: async (req: Request, res: Response) => {
-
-        const user = await User.findOne({
-            token: req.query.token
-        })
+    info: async (req: Request, res: Response) => {        
+        
+        const user = req.user as UserWithId //injected by JWT in Auth.private
+        
         if(!user) {
             res.json({error: 'Server error, login again'})
             return
@@ -37,7 +40,7 @@ const UserController = {
 
         const state = await State.findById(user.state)
         const ads = await Ads.find({idUser: user._id.toString()})
-        //console.log(state?.name)
+        
         let adList: AdsType[]  = []
        
         for(let i in ads) {
