@@ -1,8 +1,9 @@
-import jwt from 'jsonwebtoken'
-const generateToken = (data:object) => {
+import jwt from "jsonwebtoken";
 
-    return jwt.sign(data, process.env.SECRET_KEY as string, {expiresIn: '3min'})
+const generateToken = async (data: object) => {
+    return jwt.sign(data, process.env.SECRET_KEY as string, {
+        expiresIn: "15min"
+    });
+};
 
-}
-
-export default generateToken
+export default generateToken;

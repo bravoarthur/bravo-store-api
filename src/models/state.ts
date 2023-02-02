@@ -1,18 +1,17 @@
 import { Schema, model, Model, connection } from "mongoose";
 
 export type StateType = {
-    name: string,
-} 
-
+    name: string;
+};
 
 const schema = new Schema<StateType>({
-    name: String,    
-})
+    name: String
+});
 
-const modelName: string = 'State'
+const modelName: string = "State";
 
-console.log(connection.models[modelName])
+console.log(connection.models[modelName]);
 
-
-export default (connection && connection.models[modelName]) ? connection.models[modelName] as Model<StateType>  : model<StateType>(modelName, schema)
-
+export default connection && connection.models[modelName]
+    ? (connection.models[modelName] as Model<StateType>)
+    : model<StateType>(modelName, schema);

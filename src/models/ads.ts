@@ -1,24 +1,20 @@
 import { Schema, model, Model, connection, Types } from "mongoose";
 
 export type AdsType = {
-    
-    idUser: Types.ObjectId | string,
-    state: string,
-    category: Types.ObjectId | string,
-    images: [{url: string, default: boolean}],
-    dateCreated: Date,
-    title: string,
-    price: number,
-    priceNegotiable: boolean,
-    description: string,
-    views: number,
-    status: boolean,
-
-} 
-
+    idUser: Types.ObjectId | string;
+    state: string;
+    category: Types.ObjectId | string;
+    images: [{ url: string; default: boolean }];
+    dateCreated: Date;
+    title: string;
+    price: number;
+    priceNegotiable: boolean;
+    description: string;
+    views: number;
+    status: boolean;
+};
 
 const schema = new Schema<AdsType>({
-    
     idUser: String,
     state: String,
     category: String,
@@ -29,16 +25,11 @@ const schema = new Schema<AdsType>({
     priceNegotiable: Boolean,
     description: String,
     views: Number,
-    status: Boolean,
+    status: Boolean
+});
 
-    
-})
+const modelName: string = "Ads";
 
-const modelName: string = 'Ads'
-
-console.log(connection.models[modelName])
-
-
-export default (connection && connection.models[modelName]) ? connection.models[modelName] as Model<AdsType> : model<AdsType>(modelName, schema)
-
-
+export default connection && connection.models[modelName]
+    ? (connection.models[modelName] as Model<AdsType>)
+    : model<AdsType>(modelName, schema);

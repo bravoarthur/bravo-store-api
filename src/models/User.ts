@@ -7,8 +7,11 @@ export type UserType = {
     state: string,
     passwordHash: string,
     token: string
-
 } 
+
+export interface UserWithId extends UserType {
+    _id: string
+}
 
 
 const schema = new Schema<UserType>({
