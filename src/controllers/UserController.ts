@@ -6,6 +6,7 @@ import Ads, { AdsType } from "../models/ads";
 import mongoose from "mongoose";
 import bcrypt from "bcrypt";
 import validateAndGetData from "../helpers/validatorHelper";
+import errorOjectHandler from "../helpers/errorObjectHandler";
 
 type UpdatesType = {
     name?: string;
@@ -25,7 +26,7 @@ const UserController = {
         const user = req.user as UserWithId; //injected by JWT in Auth.private
 
         if (!user) {
-            res.json({ error: "Server error, login again" });
+            res.json(errorOjectHandler('Server', 'Server error, login again'));
             return;
         }
 
@@ -75,7 +76,7 @@ const UserController = {
             const emailCheck = await User.findOne({ email: data.email });
             if (emailCheck) {
                 res.status(401);
-                res.json({ error: { email: { msg: "Email already exists" } } });
+                res.json(errorOjectHandler('email', 'Email already exists'));
                 return;
             }
             updates.email = data.email;
@@ -86,15 +87,13 @@ const UserController = {
                 const stateCheck = await State.findById(data.state);
                 if (!stateCheck) {
                     res.status(401);
-                    res.json({
-                        error: { state: { msg: "state doesnt exist" } }
-                    });
+                    res.json(errorOjectHandler('State', 'State doesnt exists'));
                     return;
                 }
                 updates.state = data.state;
             } else {
                 res.status(401);
-                res.json({ error: { state: { msg: "state doesnt exist" } } });
+                res.json(errorOjectHandler('State', 'State doesnt exists'));
                 return;
             }
         }

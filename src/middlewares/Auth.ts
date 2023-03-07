@@ -7,8 +7,7 @@ const notAuthorizedJson = { status: 401, message: "Not Authorized" };
 const Auth = {
     private: (req: Request, res: Response, next: NextFunction) => {
         const authFunction = passport.authenticate("jwt", (err, user) => {
-            req.user = user;
-
+            req.user = user; 
             if (user) {
                 next();
             } else {

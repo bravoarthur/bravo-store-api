@@ -68,14 +68,16 @@ const AdsController = {
             res.json({ error: { message: "Title or Category is missing" } });
             return;
         }
-
+        console.log('AQUII')
         if (price) {
+            console.log(price)
+            price = price.slice(3)
             price = price.replace(".", "").replace(",", ".");
             price = parseFloat(price);
         } else {
             price = 0;
         }
-
+        console.log(price)
         const categoryId = await Categories.findOne({
             $regex: cat,
             $options: "i"
@@ -180,8 +182,7 @@ const AdsController = {
         }
 
         const adsTotal = await Ads.find(filters).exec();
-        total = adsTotal.length;
-
+        total = adsTotal.length;        
         const adsData = await Ads.find(filters)
             .sort({ dateCreated: sort === "desc" ? -1 : 1 })
             .skip(parseInt(offset as string))
@@ -234,6 +235,10 @@ const AdsController = {
         let images = [];
         for (let i in ad.images) {
             images.push(`${process.env.Base}/media/${ad.images[i].url}`);
+        }
+
+        if (images.length === 0) {
+            images.push(`${process.env.Base}/media/default.jpg`)
         }
 
         let category = await Categories.findById(ad.category).exec();

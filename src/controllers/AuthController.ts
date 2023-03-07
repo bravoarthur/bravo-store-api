@@ -5,6 +5,7 @@ import mongoose from "mongoose";
 import bcrypt from "bcrypt";
 import generateToken from "../helpers/generateToken";
 import validateAndGetData from "../helpers/validatorHelper";
+import errorOjectHandler from "../helpers/errorObjectHandler";
 
 const AuthController = {
     signin: async (req: Request, res: Response) => {
@@ -17,9 +18,7 @@ const AuthController = {
         ////Email check/////////////////////////////
         if (!user) {
             res.status(400);
-            res.json({
-                error: { email: { msg: "Email or password invalid" } }
-            });
+            res.json(errorOjectHandler('email', 'Email or password invalid'));
             return;
         }
         /////password check ///////////////////////
@@ -27,9 +26,7 @@ const AuthController = {
         const match = await bcrypt.compare(data.password, user.passwordHash);
         if (!match) {
             res.status(400);
-            res.json({
-                error: { password: { msg: "Email or password invalid" } }
-            });
+            res.json(errorOjectHandler('password', 'Email or password invalid'));
             return;
         }
 
@@ -52,7 +49,7 @@ const AuthController = {
 
         if (useremail) {
             res.status(400);
-            res.json({ error: { email: { msg: "Email already exists" } } });
+            res.json(errorOjectHandler('email', "Email already exists"));
             return;
         }
 
@@ -60,13 +57,13 @@ const AuthController = {
         if (mongoose.Types.ObjectId.isValid(data.state)) {
             const stateItem = await State.findById(data.state);
             if (!stateItem) {
-                res.status(400);
-                res.json({ error: { state: { msg: "State doesnt exist" } } });
+                res.status(400); 
+                res.json(errorOjectHandler('state', 'State doesnt exist'));
                 return;
             }
         } else {
             res.status(400);
-            res.json({ error: { state: { msg: "State code error" } } });
+            res.json(errorOjectHandler('state', 'State Code Error'));
             return;
         }
 
